@@ -1,55 +1,49 @@
---// Character Aimbot with Open/Close GUI
+--// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- Settings
+--// Config
 local Enabled = false
 local AimRange = 150
 local Prediction = 0.3
-
--- Animation IDs
-local AnimIDs = {
-    ["103601716322988"]=true,
-    ["133491532453922"]=true,
-    ["86371356500204"]=true,
-    ["76649505662612"]=true,
-    ["81698196845041"]=true,
-    ["111313169447787"]=true, -- MLG Chance
-}
-
 local ActiveAnims = {}
 
--- GUI
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local ScreenGui = Instance.new("ScreenGui", PlayerGui)
-ScreenGui.Name = "AimbotUI"
-ScreenGui.ResetOnSpawn = false
+-- Survivor Animation IDs only
+local AnimIDs = {
+    ["103601716322988"] = true,
+    ["133491532453922"] = true,
+    ["86371356500204"]  = true,
+    ["76649505662612"]  = true,
+    ["81698196845041"]  = true,
+    ["111313169447787"] = true,
+    ["90499469533503"]  = true,
+}
 
--- Open Button
+--// UI Setup
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+
 local OpenButton = Instance.new("TextButton", ScreenGui)
-OpenButton.Size = UDim2.new(0,80,0,30)
+OpenButton.Size = UDim2.new(0,100,0,40)
 OpenButton.Position = UDim2.new(0,10,0,10)
 OpenButton.Text = "Open"
-OpenButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+OpenButton.BackgroundColor3 = Color3.fromRGB(50,150,250)
 OpenButton.TextColor3 = Color3.fromRGB(255,255,255)
 
--- Main Frame
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0,250,0,180)
-MainFrame.Position = UDim2.new(0,100,0,50)
+MainFrame.Size = UDim2.new(0,250,0,200)
+MainFrame.Position = UDim2.new(0,120,0,10)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 MainFrame.Visible = false
 
--- Close Button
 local CloseButton = Instance.new("TextButton", MainFrame)
-CloseButton.Size = UDim2.new(0,50,0,25)
-CloseButton.Position = UDim2.new(1,-55,0,5)
-CloseButton.Text = "Close"
+CloseButton.Size = UDim2.new(0,40,0,20)
+CloseButton.Position = UDim2.new(1,-45,0,5)
+CloseButton.Text = "X"
 CloseButton.BackgroundColor3 = Color3.fromRGB(200,50,50)
 CloseButton.TextColor3 = Color3.fromRGB(255,255,255)
 
--- Toggle Aimbot
+-- Toggle button
 local ToggleButton = Instance.new("TextButton", MainFrame)
 ToggleButton.Size = UDim2.new(0,200,0,40)
 ToggleButton.Position = UDim2.new(0,25,0,10)
@@ -62,7 +56,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     ToggleButton.Text = "Aimbot: "..(Enabled and "ON" or "OFF")
 end)
 
--- Aim Range TextBox
+-- Range box
 local RangeBox = Instance.new("TextBox", MainFrame)
 RangeBox.Size = UDim2.new(0,200,0,30)
 RangeBox.Position = UDim2.new(0,25,0,60)
@@ -76,7 +70,7 @@ RangeBox.FocusLost:Connect(function()
     if num then AimRange=num else RangeBox.Text=tostring(AimRange) warn("Invalid Range") end
 end)
 
--- Prediction TextBox
+-- Prediction box
 local PredictionBox = Instance.new("TextBox", MainFrame)
 PredictionBox.Size = UDim2.new(0,200,0,30)
 PredictionBox.Position = UDim2.new(0,25,0,100)
@@ -90,7 +84,7 @@ PredictionBox.FocusLost:Connect(function()
     if num then Prediction=num else PredictionBox.Text=tostring(Prediction) warn("Invalid Prediction") end
 end)
 
--- Open/Close functionality
+-- Open/Close
 OpenButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = true
     OpenButton.Visible = false
@@ -101,7 +95,7 @@ CloseButton.MouseButton1Click:Connect(function()
     OpenButton.Visible = true
 end)
 
--- Animation detection
+--// Animation Detection
 local function setupAnimDetect(char)
     local humanoid = char:WaitForChild("Humanoid")
     local animator = humanoid:WaitForChild("Animator")
@@ -117,11 +111,11 @@ end
 if LocalPlayer.Character then setupAnimDetect(LocalPlayer.Character) end
 LocalPlayer.CharacterAdded:Connect(setupAnimDetect)
 
--- Aimbot loop
+--// Aimbot Loop
 RunService.RenderStepped:Connect(function()
     if not Enabled then return end
     if next(ActiveAnims)==nil then return end
-    local myChar=LocalPlayer.Character
+    local myChar = LocalPlayer.Character
     if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
 
     local closestTarget=nil
